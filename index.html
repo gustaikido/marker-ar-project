@@ -1,63 +1,32 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>WebXR AR Marker</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-threex.js"></script>
-</head>
-<body>
-  <script>
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AR.js Marker WebXR Example</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true;"
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    >
+      <a-assets>
+        <img id="marker" src="https://gustaikido.github.io/marker-ar-project/pattern-markerAR.patt" crossorigin="anonymous">
+      </a-assets>
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 100);
-
-    navigator.xr.requestSession('immersive-ar', {
-      optionalFeatures: ['dom-overlay'],
-      domOverlay: { root: document.body }
-    }).then((session) => {
-      renderer.xr.enabled = true;
-      renderer.xr.setSession(session);
-      session.updateRenderState({ baseLayer: new XRWebGLLayer(session, renderer.context) });
-
-      const arSource = new THREEx.ArToolkitSource({ sourceType: 'webxr' });
-      const arContext = new THREEx.ArToolkitContext({ cameraParametersUrl: 'https://gustaikido.github.io/marker-ar-project/pattern-markerAR.patt' });
-
-      arContext.init(() => {
-        camera.projectionMatrix.copy(arContext.getProjectionMatrix());
-      });
-
-      const arMarkerControls = new THREEx.ArMarkerControls(arContext, camera, { type: 'pattern', patternUrl: 'https://gustaikido.github.io/marker-ar-project/pattern-markerAR.patt' });
-
-      // Aggiungi un cubo alla scena
-      const cube = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshNormalMaterial()
-      );
-      cube.position.y = 0.5;
-      scene.add(cube);
-
-      // Aggiungi una luce alla scena
-      const light = new THREE.PointLight(0xffffff, 1, 100);
-      light.position.set(0, 2, 2);
-      scene.add(light);
-
-      // Funzione di animazione
-      const animate = function () {
-        renderer.setAnimationLoop(() => {
-          if (arSource.ready) {
-            arContext.update(arSource.domElement);
-            scene.visible = camera.visible;
-          }
-          renderer.render(scene, camera);
-        });
-      };
-      animate();
-    });
-  </script>
-</body>
+      <a-marker preset="custom" type="pattern" url="#marker">
+        <a-entity
+          position="0 0.5 0"
+          scale="0.05 0.05 0.05"
+          gltf-model="https://cdn.glitch.com/36cb4390-65aa-4f2b-908d-7b8e7b87e6a9%2Fscene%20(1).glb?v=1606929908396"
+          animation-mixer
+        ></a-entity>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+  </body>
 </html>
