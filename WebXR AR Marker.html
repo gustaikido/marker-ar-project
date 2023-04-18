@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebXR AR Marker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-threex.js"></script>
+</head>
+<body>
+  <script>
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 100);
+
+    navigator.xr.requestSession('immersive-ar', {
+      optionalFeatures: ['dom-overlay'],
+      domOverlay: { root: document.body }
+    }).then((session) => {
+      renderer.xr.enabled = true;
+      renderer.xr.setSession(session);
+      session.updateRenderState({ baseLayer: new XRWebGLLayer(session, renderer.context) });
+
+      const arSource = new THREEx.ArToolkitSource({ sourceType: 'webxr' });
+      const arContext = new THREEx.ArToolkitContext({ cameraParametersUrl: 'path/to/your/marker-file.patt' });
+
+      arContext.init(() => {
+        camera.projectionMatrix.copy(arContext.getProjectionMatrix());
+      });
+
+      const arMarkerControls = new THREEx.ArMarkerControls(arContext, camera, { type: 'pattern', patternUrl: 'path/to/your/marker-file.patt' });
+
+      // Aggiungi un cubo alla scena
+      const cube = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.MeshNormalMaterial()
+      );
+      cube.position.y = 0.5;
+      scene.add(cube);
+
+      // Aggiungi una luce alla scena
+      const light = new THREE.PointLight(0xffffff, 1, 100);
+      light.position.set(0, 2, 2);
+      scene.add(light);
+
+      // Funzione di animazione
+      const animate = function () {
+        renderer.setAnimationLoop(() => {
+          if (arSource.ready) {
+            arContext.update(arSource.domElement);
+            scene.visible = camera.visible;
+          }
+          renderer.render(scene, camera);
+        });
+      };
+      animate();
+    });
+  </script>
+</body>
+</html>
