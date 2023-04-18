@@ -12,7 +12,7 @@
       vr-mode-ui="enabled: false"
       renderer="logarithmicDepthBuffer: true;"
       embedded
-      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; cameraParametersUrl: https://raw.githubusercontent.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/camera_para.dat"
     >
       <a-assets>
         <img id="marker" src="https://gustaikido.github.io/marker-ar-project/pattern-markerAR.patt" crossorigin="anonymous">
@@ -26,7 +26,7 @@
           animation-mixer
         ></a-entity>
       </a-marker>
-      <a-entity camera="fov: 18;"></a-entity>
+      <a-entity camera></a-entity>
     </a-scene>
   </body>
 </html>
